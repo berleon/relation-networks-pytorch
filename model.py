@@ -52,7 +52,8 @@ class RelationNetworks(nn.Module):
             nn.ReLU(),
             nn.Linear(mlp_hidden, mlp_hidden),
             nn.ReLU(),
-            nn.Dropout(),
+            # we disabled random dropout
+            # nn.Dropout(),
             nn.Linear(mlp_hidden, classes),
         )
 
