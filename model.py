@@ -67,20 +67,25 @@ class RelationNetworks(nn.Module):
         coords = torch.stack([x, y]).unsqueeze(0)
         self.register_buffer('coords', coords)
 
-    def forward(self, image, question, question_len):
-        conv = self.conv(image)
-        batch_size, n_channel, conv_h, conv_w = conv.size()
-        n_pair = conv_h * conv_w
-
+    def lstm_embed(self, question, question_len) -> torch.Tensor:
         embed = self.embed(question)
         embed_pack = nn.utils.rnn.pack_padded_sequence(
             embed, question_len, batch_first=True
         )
         _, (h, c) = self.lstm(embed_pack)
-        h_tile = h.permute(1, 0, 2).expand(
+        return h
+
+    def forward(self, image, question=None, question_len=None, lstm_embed=None):
+        conv = self.conv(image)
+        batch_size, n_channel, conv_h, conv_w = conv.size()
+        n_pair = conv_h * conv_w
+
+        if lstm_embed is None:
+            lstm_embed = self.lstm_embed(question, question_len)
+
+        h_tile = lstm_embed.permute(1, 0, 2).expand(
             batch_size, n_pair * n_pair, self.lstm_hidden
         )
-
         conv = torch.cat([conv, self.coords.expand(batch_size, 2, conv_h, conv_w)], 1)
         n_channel += 2
         conv_tr = conv.view(batch_size, n_channel, -1).permute(0, 2, 1)
