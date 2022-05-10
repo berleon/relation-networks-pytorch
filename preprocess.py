@@ -55,7 +55,7 @@ def process_question(root, split, word_dic=None, answer_dic=None):
             )
         )
 
-    with open(f'data/{split}.pkl', 'wb') as f:
+    with open(f'{root}/{split}.pkl', 'wb') as f:
         pickle.dump(result, f)
 
     return word_dic, answer_dic
@@ -76,21 +76,26 @@ def process_image(path, output_dir):
         img.save(os.path.join(output_dir, imgfile))
 
 
-if __name__ == '__main__':
-    root = sys.argv[1]
+def main(root, only_questions=False):
 
     word_dic, answer_dic = process_question(root, 'train')
     process_question(root, 'val', word_dic, answer_dic)
 
-    with open('data/dic.pkl', 'wb') as f:
+    with open(os.path.join(root, 'dic.pkl'), 'wb') as f:
         pickle.dump({'word_dic': word_dic, 'answer_dic': answer_dic}, f)
 
+    if only_questions:
+        return
+
     process_image(
-        os.path.join(sys.argv[1], 'images/train'),
-        os.path.join(sys.argv[1], 'images/train_preprocessed'),
+        os.path.join(root, 'images/train'),
+        os.path.join(root, 'images/train_preprocessed'),
     )
     process_image(
-        os.path.join(sys.argv[1], 'images/val'),
-        os.path.join(sys.argv[1], 'images/val_preprocessed'),
+        os.path.join(root, 'images/val'),
+        os.path.join(root, 'images/val_preprocessed'),
     )
 
+
+if __name__ == '__main__':
+    main(sys.argv[1])

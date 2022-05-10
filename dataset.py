@@ -58,10 +58,10 @@ category = {'0': 'count',
 class CLEVR(Dataset):
     def __init__(self, root, split='train', transform=None,
                  reverse_question=False, use_preprocessed=False):
-        with open(f'data/{split}.pkl', 'rb') as f:
+        with open(f'{root}/{split}.pkl', 'rb') as f:
             self.data = pickle.load(f)
 
-        with open('data/dic.pkl', 'rb') as f:
+        with open(f'{root}/dic.pkl', 'rb') as f:
             self.dic = pickle.load(f)
         self.answer_class = {v: k for k, v in self.dic['answer_dic'].items()}
 
