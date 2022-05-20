@@ -52,8 +52,7 @@ def process_question(
         for word in words:
             try:
                 question_token.append(word_dic[word])
-
-            except:
+            except KeyError:
                 question_token.append(word_index)
                 word_dic[word] = word_index
                 word_index += 1
@@ -62,8 +61,7 @@ def process_question(
 
         try:
             answer = answer_dic[answer_word]
-
-        except:
+        except KeyError:
             answer = answer_index
             answer_dic[answer_word] = answer_index
             answer_index += 1
